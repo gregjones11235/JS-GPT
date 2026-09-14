@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
 import PdfUploader from "./components/PdfUploader";
+import FileList from "./components/FileList";
 import ChatComponent from "./components/ChatComponent";
 import RenderQA from "./components/RenderQA";
 import { Layout, Typography } from "antd";
@@ -22,9 +24,25 @@ const renderQAStyle = {
   overflowY: "auto",
 };
 
+const DOMAIN = process.env.REACT_APP_DOMAIN;
+
 const App = () => {
   const [conversation, setConversation] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [files, setFiles] = useState([]);
+
+  const refreshFiles = useCallback(async () => {
+    try {
+      const response = await axios.get(`${DOMAIN}/files`);
+      setFiles(response.data);
+    } catch (error) {
+      console.error("Error fetching file list: ", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshFiles();
+  }, [refreshFiles]);
   const { Header, Content } = Layout;
   const { Title } = Typography;
 
@@ -45,8 +63,11 @@ const App = () => {
         </Header>
         <Content style={{ width: "80%", margin: "auto" }}>
           <div style={pdfUploaderStyle}>
-            <PdfUploader />
+            <PdfUploader onUploaded={refreshFiles} />
           </div>
+
+          <br />
+          <FileList files={files} refreshFiles={refreshFiles} />
 
           <br />
           <br />
