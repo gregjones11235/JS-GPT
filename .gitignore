@@ -27,3 +27,6 @@ yarn-error.log*
 
 #node modules
 **/node_modules
+# uploaded PDFs must never be committed
+server/uploads/*
+!server/uploads/.gitkeep
