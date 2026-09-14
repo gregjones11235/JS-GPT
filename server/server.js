@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import multer from "multer"; // Import multer
 import path from "path";
-import { readdir, stat, unlink } from "fs/promises";
+import { mkdir, readdir, stat, unlink } from "fs/promises";
 
 dotenv.config();
 
@@ -21,6 +21,8 @@ const app = express();
 app.use(cors());
 
 const UPLOAD_DIR = "uploads";
+// The directory is git-ignored, so it may not exist on a fresh clone
+await mkdir(UPLOAD_DIR, { recursive: true });
 
 // Configure multer
 const storage = multer.diskStorage({
